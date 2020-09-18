@@ -1,5 +1,6 @@
-###Advanced Python for Data Science Assignment 1
-Do the following using the Linux/Mac shell or GitBash on Windows:
+# Advanced Python for Data Science Assignment 1
+### Do the following using the Linux/Mac shell or GitBash on Windows:
+
 
 1. We have data on bird communities that we’ve collected that we need to analyze. The data has three columns, a date, a common name, and a count of the number of individuals.
 
@@ -16,7 +17,7 @@ Do the following using the Linux/Mac shell or GitBash on Windows:
 	sort data_drycanyon_2013.txt -k 3 -n > sorted_counts.txt
 	head -1 sorted_counts.txt > least_common_species.txt
 
-	Now we want to get the most common species at the site. You can do this using the tail command. Since we don’t need the intermediate `sorted_counts.txt` file, use a pipe instead of creating the intermediate file.
+	Now we want to get the most common species at the site. You can do this using the `tail` command. Since we don’t need the intermediate `sorted_counts.txt` file, use a pipe instead of creating the intermediate file.
 
 	Save both the curl command and the one line command for storing the most common species in a text file called `get_most_common_species.sh`.
 
