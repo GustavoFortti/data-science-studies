@@ -115,9 +115,9 @@ def offset_momentum(ref, px=0.0, py=0.0, pz=0.0):
         offset values from this reference
     '''
 
-    p = [px, py, pz]
-    p = list(map(lambda body: list(map(lambda x: x[0] - x[1], zip(p, multply(BODIES[body])))), (BODIES.keys())))
-    print(p)
+    # p = [px, py, pz]
+    # p = list(map(lambda body: list(map(lambda x: x[0] - x[1], zip(p, multply(BODIES[body])))), (BODIES.keys())))
+    # print(p)
 
 
 
@@ -128,10 +128,6 @@ def offset_momentum(ref, px=0.0, py=0.0, pz=0.0):
         py -= vy * m
         pz -= vz * m
     
-    print(px)
-    print(py)
-    print(pz)
-
     (r, v, m) = ref
     v[0] = px / m
     v[1] = py / m
