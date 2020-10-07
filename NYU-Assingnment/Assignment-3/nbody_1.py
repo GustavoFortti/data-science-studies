@@ -1,6 +1,12 @@
 """
     N-body simulation.
 """
+############ Using data aggregation to reduce loop overheads. (Area 2)
+############ This area of improvement ranked the 2nd.
+############ runtime: 79.17s 
+############ relative speedup: 1.46x
+
+import itertools
 
 PI = 3.14159265358979323
 SOLAR_MASS = 4 * PI * PI
@@ -41,6 +47,9 @@ BODIES = {
                  -9.51592254519715870e-05 * DAYS_PER_YEAR],
                 5.15138902046611451e-05 * SOLAR_MASS)}
 
+# Create pairs of keys for later use
+pairs = list(itertools.combinations(BODIES.keys(), 2))
+
 def compute_deltas(x1, x2, y1, y2, z1, z2):
     return (x1-x2, y1-y2, z1-z2)
     
@@ -68,15 +77,12 @@ def advance(dt):
     '''
         advance the system one timestep
     '''
-    seenit = []
-    for body1 in BODIES.keys():
-        for body2 in BODIES.keys():
-            if (body1 != body2) and not (body2 in seenit):
-                ([x1, y1, z1], v1, m1) = BODIES[body1]
-                ([x2, y2, z2], v2, m2) = BODIES[body2]
-                (dx, dy, dz) = compute_deltas(x1, x2, y1, y2, z1, z2)
-                update_vs(v1, v2, dt, dx, dy, dz, m1, m2)
-                seenit.append(body1)
+    for body1, body2 in pairs:
+        ([x1, y1, z1], v1, m1) = BODIES[body1]
+        ([x2, y2, z2], v2, m2) = BODIES[body2]
+        (dx, dy, dz) = compute_deltas(x1, x2, y1, y2, z1, z2)
+        update_vs(v1, v2, dt, dx, dy, dz, m1, m2)
+
         
     for body in BODIES.keys():
         (r, [vx, vy, vz], m) = BODIES[body]
@@ -89,45 +95,31 @@ def report_energy(e=0.0):
     '''
         compute the energy and return it so that it can be printed
     '''
-    seenit = []
-    for body1 in BODIES.keys():
-        for body2 in BODIES.keys():
-            if (body1 != body2) and not (body2 in seenit):
-                ((x1, y1, z1), v1, m1) = BODIES[body1]
-                ((x2, y2, z2), v2, m2) = BODIES[body2]
-                (dx, dy, dz) = compute_deltas(x1, x2, y1, y2, z1, z2)
-                e -= compute_energy(m1, m2, dx, dy, dz)
-                seenit.append(body1)
-        
+    # Replace the loop with generated key pairs from above
+    for body1, body2 in pairs:
+        ((x1, y1, z1), v1, m1) = BODIES[body1]
+        ((x2, y2, z2), v2, m2) = BODIES[body2]
+        (dx, dy, dz) = compute_deltas(x1, x2, y1, y2, z1, z2)
+        e -= compute_energy(m1, m2, dx, dy, dz)
+
+
     for body in BODIES.keys():
         (r, [vx, vy, vz], m) = BODIES[body]
         e += m * (vx * vx + vy * vy + vz * vz) / 2.
         
     return e
 
-
-def multply(x):
-    return [x[0][0] * x[2], x[0][1] * x[2], x[0][2] * x[2]]
-
 def offset_momentum(ref, px=0.0, py=0.0, pz=0.0):
     '''
         ref is the body in the center of the system
         offset values from this reference
     '''
-
-    # p = [px, py, pz]
-    # p = list(map(lambda body: list(map(lambda x: x[0] - x[1], zip(p, multply(BODIES[body])))), (BODIES.keys())))
-    # print(p)
-
-
-
     for body in BODIES.keys():
         (r, [vx, vy, vz], m) = BODIES[body]
-
         px -= vx * m
         py -= vy * m
         pz -= vz * m
-    
+        
     (r, v, m) = ref
     v[0] = px / m
     v[1] = py / m
@@ -151,5 +143,6 @@ def nbody(loops, reference, iterations):
         print(report_energy())
 
 if __name__ == '__main__':
-    nbody(100, 'sun', 20000)
-
+    # nbody(100, 'sun', 20000)
+    import timeit
+    print(timeit.timeit("nbody(100, 'sun', 20000)", globals=globals(), number=1))

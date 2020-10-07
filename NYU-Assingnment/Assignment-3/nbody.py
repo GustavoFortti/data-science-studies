@@ -1,3 +1,5 @@
+import time
+
 """
     N-body simulation.
 """
@@ -139,5 +141,7 @@ def nbody(loops, reference, iterations):
         print(report_energy())
 
 if __name__ == '__main__':
+    inicio = time.time()
     nbody(100, 'sun', 20000)
-
+    fim = time.time()
+    print(fim - inicio)
